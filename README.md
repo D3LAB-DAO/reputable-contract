@@ -1,13 +1,21 @@
-# Sample Hardhat Project
+# Reputable
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
+`Reputable` makes it easy for users to create their own tokens. Tokens may be used for various services. Since all tokens have a common total supply and inflation rate, the price becomes personal credit. It is useful for designing credit-based apps such as dynamic returns.
 
-Try running some of the following tasks:
+# Structure
 
-```shell
-npx hardhat help
-npx hardhat test
-GAS_REPORT=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.js
-```
+<!-- graph -->
+
+## Governance
+
+## Swap
+
+- MasterChef.sol
+
+## Swap-periphery
+
+## Reputable
+
+- RepuERC20.sol
+
+- RepuFactory.sol

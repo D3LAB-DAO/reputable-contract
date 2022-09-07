@@ -17,8 +17,10 @@
   },
   "homepage": "https://github.com/REPU-table/reputable-contract#readme",
   "dependencies": {
+    "@openzeppelin/contracts": "^4.7.3",
     "hardhat": "^2.11.1",
-    "solc": "^0.8.9"
+    "solc": "^0.8.9",
+    "solidity-docgen": "^0.6.0-beta.25"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^1.0.2"
