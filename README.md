@@ -19,3 +19,18 @@
 - RepuERC20.sol
 
 - RepuFactory.sol
+
+<!--
+# Technologies
+
+- ENS
+
+# Special Thanks to
+
+- Uniswap
+- Sushiswap
+- Compound
+- Curve
+- Zapper
+- And the other all open-sources creators 
+-->
