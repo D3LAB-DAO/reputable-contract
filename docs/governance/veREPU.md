@@ -42,12 +42,6 @@ Deposits REPUs and mints veREPUs.
 
 
 
-### `_safeTokenTransfer(address to_, uint256 amount_)` (internal)
-
-Safe token transfer function,
-
-
-
 
 ### `Deposit(address from_, uint256 amount_, uint256 expiration_)`
 

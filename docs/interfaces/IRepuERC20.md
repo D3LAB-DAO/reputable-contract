@@ -47,4 +47,22 @@
 
 
 
+### `initialize(address creator_, address repu_)` (external)
+
+
+
+
+
+### `lastRewardBlock() → uint256` (external)
+
+
+
+
+
+### `accTokenPerShare() → uint256` (external)
+
+
+
+
+
 

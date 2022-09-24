@@ -5,7 +5,13 @@
 
 
 
-### `constructor(string symbol, address repu_)` (public)
+### `constructor(string symbol)` (public)
+
+
+
+
+
+### `initialize(address creator_, address repu_)` (external)
 
 
 
@@ -62,6 +68,7 @@ Withdraw without caring about rewards. EMERGENCY ONLY.
 ### `_safeTokenTransfer(address to_, uint256 amount_)` (internal)
 
 Safe token transfer function,
+just in case if rounding error causes this contract to not have enough Tokens.
 
 
 
