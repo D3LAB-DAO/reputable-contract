@@ -4,11 +4,9 @@ pragma solidity ^0.8.0;
 
 import "./RepuERC20.sol";
 
-interface IRepuERC20 {
-    function initialize() external;
-}
-
 contract RepuFactory is Ownable {
+    uint256 public constant TOKEN_PER_BLOCK = 2; // block interval 2s
+
     address public feeTo; // if feeTo != address(0), tax on entrances
 
     mapping(address => address) public getRToken;
@@ -40,7 +38,7 @@ contract RepuFactory is Ownable {
         }
 
         // TODO: require min REPUs for create rToken
-        IRepuERC20(rToken).initialize();
+        // IRepuERC20(rToken).initialize();
 
         getRToken[msgSender] = rToken;
         allRTokens.push(rToken);
