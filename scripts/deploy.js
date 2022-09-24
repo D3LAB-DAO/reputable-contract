@@ -10,8 +10,8 @@ async function main() {
     const RepuFactory = await ethers.getContractFactory("RepuFactory");
     const repuFactory = await RepuFactory.deploy(repu.address);
 
-    console.log("REPU address:\t", repu.address);
-    console.log("RepuFactory address:\t", repuFactory.address);
+    console.log("REPU address:", repu.address);
+    console.log("RepuFactory address:", repuFactory.address);
 }
 
 main()
