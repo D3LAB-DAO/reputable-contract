@@ -30,11 +30,11 @@ contract RepuERC20 is ERC20Capped, ERC20Burnable, ERC20VotesComp {
     address public creator;
     IERC20 public repu;
 
-    uint256 public constant TOKEN_PER_BLOCK = 2; // block interval 2s // about 30 years
+    uint256 public constant TOKEN_PER_BLOCK = 2 * 1e18; // block interval 2s // about 30 years
     uint256 private constant ACC_TOKEN_PRECISION = 1e12;
 
     constructor(string memory symbol)
-        ERC20Capped(1000000000 * 10e18)
+        ERC20Capped(1000000000 * 1e18)
         ERC20(symbol, string(abi.encodePacked("r", symbol)))
         ERC20Permit(string(abi.encodePacked("r", symbol)))
     {
@@ -58,45 +58,45 @@ contract RepuERC20 is ERC20Capped, ERC20Burnable, ERC20VotesComp {
     /// @notice Info of each user that stakes REPUs.
     mapping(address => UserInfo) public userInfo;
 
-    uint256 internal _lastRewardBlock;
-    uint256 internal _accTokenPerShare;
+    uint256 public lastRewardBlock = block.number;
+    uint256 public accTokenPerShare;
 
     /// @notice View function to see pending RepuERC20s on frontend.
     /// @param user_ Address of user.
     /// @return pending RepuERC20 reward for a given user.
     function pendingToken(address user_) public view returns (uint256 pending) {
         UserInfo storage user = userInfo[user_];
-        uint256 accTokenPerShare = _accTokenPerShare;
+        uint256 _accTokenPerShare = accTokenPerShare;
         uint256 totalDeposited = repu.balanceOf(address(this));
-        if (block.number > _lastRewardBlock && totalDeposited != 0) {
-            uint256 blocks = block.number - _lastRewardBlock;
+        if (block.number > lastRewardBlock && totalDeposited != 0) {
+            uint256 blocks = block.number - lastRewardBlock;
             uint256 tokenReward = blocks * TOKEN_PER_BLOCK;
-            accTokenPerShare +=
+            _accTokenPerShare +=
                 (tokenReward * ACC_TOKEN_PRECISION) /
                 totalDeposited;
         }
         pending = uint256(
-            int256((user.amount * accTokenPerShare) / ACC_TOKEN_PRECISION) -
+            int256((user.amount * _accTokenPerShare) / ACC_TOKEN_PRECISION) -
                 user.rewardDebt
         );
     }
 
     /// @notice Update reward variables to be up-to-date.
     function update() public {
-        if (block.number > _lastRewardBlock) {
+        if (block.number > lastRewardBlock) {
             uint256 totalDeposited = repu.balanceOf(address(this));
             if (totalDeposited > 0) {
-                uint256 blocks = block.number - _lastRewardBlock;
+                uint256 blocks = block.number - lastRewardBlock;
                 uint256 tokenReward = blocks * TOKEN_PER_BLOCK;
-                _accTokenPerShare +=
+                accTokenPerShare +=
                     (tokenReward * ACC_TOKEN_PRECISION) /
                     totalDeposited;
 
                 _mint(address(this), tokenReward);
             }
-            _lastRewardBlock = block.number;
+            lastRewardBlock = block.number;
 
-            emit Update(_lastRewardBlock, totalDeposited, _accTokenPerShare);
+            emit Update(lastRewardBlock, totalDeposited, accTokenPerShare);
         }
     }
 
@@ -111,7 +111,7 @@ contract RepuERC20 is ERC20Capped, ERC20Burnable, ERC20VotesComp {
 
         user.amount += amount_;
         user.rewardDebt += int256(
-            (amount_ * _accTokenPerShare) / ACC_TOKEN_PRECISION
+            (amount_ * accTokenPerShare) / ACC_TOKEN_PRECISION
         );
 
         repu.safeTransferFrom(msgSender, address(this), amount_);
@@ -129,7 +129,7 @@ contract RepuERC20 is ERC20Capped, ERC20Burnable, ERC20VotesComp {
         UserInfo storage user = userInfo[msgSender];
 
         user.rewardDebt -= int256(
-            (amount_ * _accTokenPerShare) / ACC_TOKEN_PRECISION
+            (amount_ * accTokenPerShare) / ACC_TOKEN_PRECISION
         );
         user.amount -= amount_;
 
@@ -147,7 +147,7 @@ contract RepuERC20 is ERC20Capped, ERC20Burnable, ERC20VotesComp {
         UserInfo storage user = userInfo[msgSender];
 
         int256 accumulatedToken = int256(
-            (user.amount * _accTokenPerShare) / ACC_TOKEN_PRECISION
+            (user.amount * accTokenPerShare) / ACC_TOKEN_PRECISION
         );
         uint256 _pendingToken = uint256(accumulatedToken - user.rewardDebt);
 
@@ -170,13 +170,13 @@ contract RepuERC20 is ERC20Capped, ERC20Burnable, ERC20VotesComp {
         UserInfo storage user = userInfo[msgSender];
 
         int256 accumulatedToken = int256(
-            (user.amount * _accTokenPerShare) / ACC_TOKEN_PRECISION
+            (user.amount * accTokenPerShare) / ACC_TOKEN_PRECISION
         );
         uint256 _pendingToken = uint256(accumulatedToken - user.rewardDebt);
 
         user.rewardDebt =
             accumulatedToken -
-            int256((amount_ * _accTokenPerShare) / ACC_TOKEN_PRECISION);
+            int256((amount_ * accTokenPerShare) / ACC_TOKEN_PRECISION);
         user.amount -= amount_;
 
         if (_pendingToken != 0) {
@@ -204,13 +204,13 @@ contract RepuERC20 is ERC20Capped, ERC20Burnable, ERC20VotesComp {
     }
 
     /// @notice Safe token transfer function,
-    // just in case if rounding error causes this contract to not have enough Tokens.
+    /// just in case if rounding error causes this contract to not have enough Tokens.
     function _safeTokenTransfer(address to_, uint256 amount_) internal {
         uint256 tokenBal = balanceOf(address(this));
         if (amount_ > tokenBal) {
-            transfer(to_, tokenBal);
+            _transfer(address(this), to_, tokenBal);
         } else {
-            transfer(to_, amount_);
+            _transfer(address(this), to_, amount_);
         }
     }
 

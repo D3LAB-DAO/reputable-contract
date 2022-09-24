@@ -107,8 +107,6 @@ contract veREPU is ERC20VotesComp {
         stake.debt += veAmount;
         stake.expiration = expiration;
 
-        _safeTokenTransfer(msgSender, veAmount);
-
         emit Deposit(msgSender, veAmount, expiration);
     }
 
@@ -128,16 +126,4 @@ contract veREPU is ERC20VotesComp {
 
         emit Withdrawal(msgSender, stake.collateral, block.number);
     }
-
-    /// @notice Safe token transfer function,
-    // just in case if rounding error causes this contract to not have enough Tokens.
-    function _safeTokenTransfer(address to_, uint256 amount_) internal {
-        uint256 tokenBal = balanceOf(address(this));
-        if (amount_ > tokenBal) {
-            transfer(to_, tokenBal);
-        } else {
-            transfer(to_, amount_);
-        }
-    }
-
 }

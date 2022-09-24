@@ -46,11 +46,11 @@ contract REPU is ERC20Capped, Ownable {
         address indexed to
     );
 
-    uint256 public constant TOKEN_PER_BLOCK = 6; // block interval 2s // about 10 years
+    uint256 public constant TOKEN_PER_BLOCK = 6 * 1e18; // block interval 2s // about 10 years
     uint256 private constant ACC_TOKEN_PRECISION = 1e12;
 
-    constructor() ERC20Capped(1000000000 * 10e18) ERC20("Reputable", "REPU") {
-        _mint(_msgSender(), 1000000 * 10e18);  // TODO amount
+    constructor() ERC20Capped(1000000000 * 1e18) ERC20("Reputable", "REPU") {
+        _mint(_msgSender(), 1000000 * 1e18);  // TODO amount
     }
 
     //==================== MasterChef ====================//
@@ -297,9 +297,9 @@ contract REPU is ERC20Capped, Ownable {
     function _safeTokenTransfer(address to_, uint256 amount_) internal {
         uint256 tokenBal = balanceOf(address(this));
         if (amount_ > tokenBal) {
-            transfer(to_, tokenBal);
+            _transfer(address(this), to_, tokenBal);
         } else {
-            transfer(to_, amount_);
+            _transfer(address(this), to_, amount_);
         }
     }
 

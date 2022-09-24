@@ -14,4 +14,7 @@ interface IRepuERC20 is IERC20 {
     function emergencyWithdraw(address to_) external;
 
     function initialize(address creator_, address repu_) external;
+
+    function lastRewardBlock() external returns (uint256);
+    function accTokenPerShare() external returns (uint256);
 }
