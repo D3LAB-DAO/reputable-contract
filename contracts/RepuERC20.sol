@@ -6,18 +6,23 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20VotesComp.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 
-import "./interfaces/IRepuERC20.sol";
-
-contract RepuERC20 is
-    IRepuERC20,
-    ERC20Capped,
-    ERC20Burnable,
-    ERC20VotesComp,
-    Ownable
-{
+contract RepuERC20 is ERC20Capped, ERC20Burnable, ERC20VotesComp {
     using SafeERC20 for IERC20;
+
+    event Update(
+        uint256 lastRewardBlock,
+        uint256 totalDeposited,
+        uint256 accTokenPerShare
+    );
+    event Deposit(address indexed user, uint256 amount, address indexed to);
+    event Withdraw(address indexed user, uint256 amount, address indexed to);
+    event Harvest(address indexed user, uint256 amount, address indexed to);
+    event EmergencyWithdraw(
+        address indexed user,
+        uint256 amount,
+        address indexed to
+    );
 
     IERC20 public repu;
 
@@ -33,6 +38,11 @@ contract RepuERC20 is
     }
 
     //==================== MasterChef ====================//
+
+    struct UserInfo {
+        uint256 amount;
+        int256 rewardDebt;
+    }
 
     /// @notice Info of each user that stakes REPUs.
     mapping(address => UserInfo) public userInfo;
@@ -200,7 +210,11 @@ contract RepuERC20 is
      *
      * See {ERC20-_mint}.
      */
-    function _mint(address account, uint256 amount) internal virtual override(ERC20, ERC20Capped, ERC20Votes) {
+    function _mint(address account, uint256 amount)
+        internal
+        virtual
+        override(ERC20, ERC20Capped, ERC20Votes)
+    {
         // require(ERC20.totalSupply() + amount <= cap(), "ERC20Capped: cap exceeded");
         if (ERC20.totalSupply() + amount > cap()) {
             ERC20Votes._mint(account, cap() - ERC20.totalSupply());

@@ -2,10 +2,13 @@
 
 pragma solidity ^0.8.0;
 
-import "./RepuERC20.sol";
-import "./interfaces/IRepuFactory.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract RepuFactory is IRepuFactory, Ownable {
+import "./RepuERC20.sol";
+
+contract RepuFactory is Ownable {
+    event RTokenCreate(address indexed from, address rToken, uint256 id);
+
     mapping(address => address) public getRToken;
     address[] public allRTokens;
 
