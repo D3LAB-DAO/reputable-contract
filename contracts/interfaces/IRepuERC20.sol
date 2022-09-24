@@ -2,7 +2,9 @@
 
 pragma solidity ^0.8.0;
 
-interface IRepuERC20 {
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
+interface IRepuERC20 is IERC20 {
     struct UserInfo {
         uint256 amount;
         int256 rewardDebt;
