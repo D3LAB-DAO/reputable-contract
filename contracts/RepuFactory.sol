@@ -6,8 +6,6 @@ import "./RepuERC20.sol";
 import "./interfaces/IRepuFactory.sol";
 
 contract RepuFactory is IRepuFactory, Ownable {
-    uint256 public constant TOKEN_PER_BLOCK = 2; // block interval 2s
-
     mapping(address => address) public getRToken;
     address[] public allRTokens;
 
