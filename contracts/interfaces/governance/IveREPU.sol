@@ -11,6 +11,5 @@ interface IveREPU is IERC20 {
     function deposit(uint256 amount, uint256 period) external returns (uint256 veAmount, uint256 expiration);
     function withdraw() external;
 
-    event Deposit(address indexed from_, uint256 amount_, uint256 expiration_);
-    event Withdrawal(address indexed to_, uint256 amount_, uint256 blockNumber_);
+    function getPriorVotes(address account, uint256 blockNumber) external view returns (uint96);
 }

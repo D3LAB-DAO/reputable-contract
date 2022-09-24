@@ -4,12 +4,12 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20VotesComp.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 
-import "../interfaces/governance/IveREPU.sol";
-
-contract veREPU is IveREPU, ERC20VotesComp, Ownable {
+contract veREPU is ERC20VotesComp {
     using SafeERC20 for IERC20;
+
+    event Deposit(address indexed from_, uint256 amount_, uint256 expiration_);
+    event Withdrawal(address indexed to_, uint256 amount_, uint256 blockNumber_);
 
     /// @notice The number of blocks to represent 1 day.
     uint256 private constant ONE_DAY_BLOCKS = 86400 / 2; // blocks
@@ -139,4 +139,5 @@ contract veREPU is IveREPU, ERC20VotesComp, Ownable {
             transfer(to_, amount_);
         }
     }
+
 }

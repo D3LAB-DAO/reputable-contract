@@ -2,6 +2,8 @@
 
 pragma solidity ^0.8.0;
 
+import "@openzeppelin/contracts/access/Ownable.sol";
+
 /**
  * @title Timelock
  *
@@ -9,9 +11,7 @@ pragma solidity ^0.8.0;
  *
  * - https://github.com/compound-finance/compound-protocol/blob/master/contracts/Timelock.sol
  */
-contract Timelock {
-    event NewAdmin(address indexed newAdmin);
-    event NewPendingAdmin(address indexed newPendingAdmin);
+contract Timelock is Ownable {
     event NewDelay(uint256 indexed newDelay);
     event CancelTransaction(
         bytes32 indexed txHash,
@@ -42,13 +42,11 @@ contract Timelock {
     uint256 public constant MINIMUM_DELAY = 2 days;
     uint256 public constant MAXIMUM_DELAY = 30 days;
 
-    address public admin;
-    address public pendingAdmin;
     uint256 public delay;
 
     mapping(bytes32 => bool) public queuedTransactions;
 
-    constructor(address admin_, uint256 delay_) {
+    constructor(uint256 delay_) {
         require(
             delay_ >= MINIMUM_DELAY,
             "Timelock::constructor: Delay must exceed minimum delay."
@@ -57,8 +55,6 @@ contract Timelock {
             delay_ <= MAXIMUM_DELAY,
             "Timelock::setDelay: Delay must not exceed maximum delay."
         );
-
-        admin = admin_;
         delay = delay_;
     }
 
@@ -82,38 +78,13 @@ contract Timelock {
         emit NewDelay(delay);
     }
 
-    function acceptAdmin() public {
-        require(
-            msg.sender == pendingAdmin,
-            "Timelock::acceptAdmin: Call must come from pendingAdmin."
-        );
-        admin = msg.sender;
-        pendingAdmin = address(0);
-
-        emit NewAdmin(admin);
-    }
-
-    function setPendingAdmin(address pendingAdmin_) public {
-        require(
-            msg.sender == address(this),
-            "Timelock::setPendingAdmin: Call must come from Timelock."
-        );
-        pendingAdmin = pendingAdmin_;
-
-        emit NewPendingAdmin(pendingAdmin);
-    }
-
     function queueTransaction(
         address target,
         uint256 value,
         string memory signature,
         bytes memory data,
         uint256 eta
-    ) public returns (bytes32) {
-        require(
-            msg.sender == admin,
-            "Timelock::queueTransaction: Call must come from admin."
-        );
+    ) public onlyOwner returns (bytes32) {
         require(
             eta >= getBlockTimestamp() + delay,
             "Timelock::queueTransaction: Estimated execution block must satisfy delay."
@@ -134,12 +105,7 @@ contract Timelock {
         string memory signature,
         bytes memory data,
         uint256 eta
-    ) public {
-        require(
-            msg.sender == admin,
-            "Timelock::cancelTransaction: Call must come from admin."
-        );
-
+    ) public onlyOwner {
         bytes32 txHash = keccak256(
             abi.encode(target, value, signature, data, eta)
         );
@@ -154,12 +120,7 @@ contract Timelock {
         string memory signature,
         bytes memory data,
         uint256 eta
-    ) public payable returns (bytes memory) {
-        require(
-            msg.sender == admin,
-            "Timelock::executeTransaction: Call must come from admin."
-        );
-
+    ) public payable onlyOwner returns (bytes memory) {
         bytes32 txHash = keccak256(
             abi.encode(target, value, signature, data, eta)
         );

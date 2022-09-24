@@ -6,10 +6,45 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-import "../interfaces/governance/IREPU.sol";
-
-contract REPU is IREPU, ERC20Capped, Ownable {
+contract REPU is ERC20Capped, Ownable {
     using SafeERC20 for IERC20;
+
+    event AddPool(
+        uint256 indexed pid,
+        uint256 allocPoint,
+        IERC20 indexed token
+    );
+    event SetPool(uint256 indexed pid, uint256 allocPoint);
+    event Update(
+        uint256 indexed pid,
+        uint256 lastRewardBlock,
+        uint256 totalDeposited,
+        uint256 accTokenPerShare
+    );
+    event Deposit(
+        address indexed user,
+        uint256 indexed pid,
+        uint256 amount,
+        address indexed to
+    );
+    event Withdraw(
+        address indexed user,
+        uint256 indexed pid,
+        uint256 amount,
+        address indexed to
+    );
+    event Harvest(
+        address indexed user,
+        uint256 indexed pid,
+        uint256 amount,
+        address indexed to
+    );
+    event EmergencyWithdraw(
+        address indexed user,
+        uint256 indexed pid,
+        uint256 amount,
+        address indexed to
+    );
 
     uint256 public constant TOKEN_PER_BLOCK = 6; // block interval 2s // about 10 years
     uint256 private constant ACC_TOKEN_PRECISION = 1e12;
@@ -17,6 +52,17 @@ contract REPU is IREPU, ERC20Capped, Ownable {
     constructor() ERC20Capped(1000000000 * 10e18) ERC20("Reputable", "REPU") {}
 
     //==================== MasterChef ====================//
+
+    struct UserInfo {
+        uint256 amount;
+        int256 rewardDebt;
+    }
+
+    struct PoolInfo {
+        uint128 accTokenPerShare;
+        uint64 lastRewardBlock;
+        uint64 allocPoint;
+    }
 
     /// @notice Info of each user that stakes tokens.
     mapping(uint256 => mapping(address => UserInfo)) public userInfo;
