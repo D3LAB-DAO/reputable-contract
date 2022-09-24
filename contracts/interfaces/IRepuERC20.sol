@@ -12,4 +12,6 @@ interface IRepuERC20 is IERC20 {
     function harvest(address to_) external;
     function withdrawAndHarvest(uint256 amount_, address to_) external;
     function emergencyWithdraw(address to_) external;
+
+    function initialize(address creator_, address repu_) external;
 }

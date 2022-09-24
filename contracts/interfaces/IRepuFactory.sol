@@ -8,4 +8,6 @@ interface IRepuFactory {
     function allRTokensLength() external view returns (uint256);
 
     function createRToken(string memory symbol_) external returns (address pair);
+
+    function repu() external returns (address);
 }

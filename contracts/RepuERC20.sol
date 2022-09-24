@@ -7,6 +7,8 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20VotesComp.sol";
 
+import "./interfaces/IRepuFactory.sol";
+
 contract RepuERC20 is ERC20Capped, ERC20Burnable, ERC20VotesComp {
     using SafeERC20 for IERC20;
 
@@ -24,16 +26,25 @@ contract RepuERC20 is ERC20Capped, ERC20Burnable, ERC20VotesComp {
         address indexed to
     );
 
+    address public factory;
+    address public creator;
     IERC20 public repu;
 
     uint256 public constant TOKEN_PER_BLOCK = 2; // block interval 2s // about 30 years
     uint256 private constant ACC_TOKEN_PRECISION = 1e12;
 
-    constructor(string memory symbol, address repu_)
+    constructor(string memory symbol)
         ERC20Capped(1000000000 * 10e18)
         ERC20(symbol, string(abi.encodePacked("r", symbol)))
         ERC20Permit(string(abi.encodePacked("r", symbol)))
     {
+        factory = msg.sender;
+    }
+
+    // called once by the factory at time of deployment
+    function initialize(address creator_, address repu_) external {
+        require(msg.sender == factory, "RepuERC20::initialize: FORBIDDEN"); // sufficient check
+        creator = creator_;
         repu = IERC20(repu_);
     }
 
