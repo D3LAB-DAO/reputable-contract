@@ -254,4 +254,18 @@ contract REPU is IREPU, ERC20Capped, Ownable {
             transfer(to_, amount_);
         }
     }
+
+    //==================== Inherited Functions ====================//
+
+    /**
+     * @dev See {ERC20-_mint}.
+     */
+    function _mint(address account, uint256 amount) internal virtual override {
+        // require(ERC20.totalSupply() + amount <= cap(), "ERC20Capped: cap exceeded");
+        if (ERC20.totalSupply() + amount > cap()) {
+            super._mint(account, cap() - ERC20.totalSupply());
+        } else {
+            super._mint(account, amount);
+        }
+    }
 }
