@@ -3,16 +3,13 @@
 pragma solidity ^0.8.0;
 
 import "./RepuERC20.sol";
+import "./interfaces/IRepuFactory.sol";
 
-contract RepuFactory is Ownable {
+contract RepuFactory is IRepuFactory, Ownable {
     uint256 public constant TOKEN_PER_BLOCK = 2; // block interval 2s
-
-    address public feeTo; // if feeTo != address(0), tax on entrances
 
     mapping(address => address) public getRToken;
     address[] public allRTokens;
-
-    event RTokenCreate(address indexed from, address rToken, uint256 id);
 
     constructor() {}
 
@@ -25,10 +22,7 @@ contract RepuFactory is Ownable {
         returns (address rToken)
     {
         address msgSender = _msgSender();
-        require(
-            getRToken[msgSender] == address(0),
-            "Reputable: RTOKEN_EXISTS"
-        );
+        require(getRToken[msgSender] == address(0), "Reputable: RTOKEN_EXISTS");
 
         bytes memory bytecode = type(RepuERC20).creationCode;
         bytecode = abi.encodePacked(bytecode, abi.encode(symbol_));
@@ -37,16 +31,12 @@ contract RepuFactory is Ownable {
             rToken := create2(0, add(bytecode, 0x20), mload(bytecode), salt)
         }
 
-        // TODO: require min REPUs for create rToken
+        // TODO: require min REPUs to create rToken
         // IRepuERC20(rToken).initialize();
 
         getRToken[msgSender] = rToken;
         allRTokens.push(rToken);
 
         emit RTokenCreate(msgSender, rToken, allRTokens.length);
-    }
-
-    function setFeeTo(address feeTo_) public onlyOwner {
-        feeTo = feeTo_;
     }
 }
