@@ -200,16 +200,13 @@ contract RepuERC20 is
      *
      * See {ERC20-_mint}.
      */
-    function _mint(address account, uint256 amount)
-        internal
-        virtual
-        override(ERC20, ERC20Capped, ERC20Votes)
-    {
-        require(
-            ERC20.totalSupply() + amount <= cap(),
-            "ERC20Capped: cap exceeded"
-        );
-        ERC20Votes._mint(account, amount);
+    function _mint(address account, uint256 amount) internal virtual override(ERC20, ERC20Capped, ERC20Votes) {
+        // require(ERC20.totalSupply() + amount <= cap(), "ERC20Capped: cap exceeded");
+        if (ERC20.totalSupply() + amount > cap()) {
+            ERC20Votes._mint(account, cap() - ERC20.totalSupply());
+        } else {
+            ERC20Votes._mint(account, amount);
+        }
     }
 
     /**
