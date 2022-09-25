@@ -6,17 +6,17 @@
 
 <!-- graph -->
 
+## Reputable
+
+- RepuERC20.sol
+- RepuFactory.sol
+
 ## Governance
 
 - REPU.sol
 - veREPU.sol
 - Governor.sol
 - Timelock.sol
-
-## Reputable
-
-- RepuERC20.sol
-- RepuFactory.sol
 
 <!--
 # Technologies
