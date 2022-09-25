@@ -50,7 +50,7 @@ contract REPU is ERC20Capped, Ownable {
     uint256 private constant ACC_TOKEN_PRECISION = 1e12;
 
     constructor() ERC20Capped(1000000000 * 1e18) ERC20("Reputable", "REPU") {
-        _mint(_msgSender(), 1000000 * 1e18);  // TODO amount
+        _mint(_msgSender(), 1000000000 * 1e18);  // TODO amount
     }
 
     //==================== MasterChef ====================//
