@@ -17,4 +17,8 @@ interface IRepuERC20 is IERC20 {
 
     function lastRewardBlock() external returns (uint256);
     function accTokenPerShare() external returns (uint256);
+
+    function factory() external returns (address);
+    function creator() external returns (address);
+    function repu() external returns (address);
 }
