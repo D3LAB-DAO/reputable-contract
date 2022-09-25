@@ -65,4 +65,22 @@
 
 
 
+### `factory() → address` (external)
+
+
+
+
+
+### `creator() → address` (external)
+
+
+
+
+
+### `repu() → address` (external)
+
+
+
+
+
 
