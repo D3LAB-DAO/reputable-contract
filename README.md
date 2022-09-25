@@ -18,6 +18,12 @@
 - Governor.sol
 - Timelock.sol
 
+# How to Deploy
+
+```
+$ npx hardhat run scripts/deploy.js
+```
+
 <!--
 # Technologies
 
